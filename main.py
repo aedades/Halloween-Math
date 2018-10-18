@@ -48,8 +48,6 @@ dead = False
 
 font = pygame.font.SysFont('comicsans', 30, True)
 
-# TODO
-# create class for user
 user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
 
 
