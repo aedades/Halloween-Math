@@ -4,12 +4,10 @@ import pygame
 
 
 def generate_nums(difficulty):
-    ops = {'+': operator.add,
-           '-': operator.sub,
-           '*': operator.mul, }
+    ops = ['+', '-', '*']
     num1 = random.randint(0, difficulty)
     num2 = random.randint(1, difficulty)
-    op = random.choice(list(ops.keys()))
+    op = random.choice(ops)
     nums = [num1, op, num2]
     return nums
 
