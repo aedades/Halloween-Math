@@ -90,14 +90,12 @@ def get_question():
     answer = str(get_answer(nums))
     return question, answer
 
-# main loop
-run = True
 
 difficulty = 10
 level = 1
 
 question, answer = get_question()
-get_new_question = True
+get_new_question = False
 
 while 1:
     is_dead = True if lives <= 0 else False
@@ -110,28 +108,25 @@ while 1:
             get_new_question = False
             text = ''
         done = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     print(f'your answer: {text}')
                     print(f'correct answer: {answer}')
                     if text == answer:
-                        np = progress + 1
-                    else:
-                        np = progress
-                    print(f'you are at {np}/5')
+                        progress += 1
+                    print(f'you are at {progress}/5')
                     done = True
                 elif event.key == pygame.K_BACKSPACE:
                     text = text[:-1]
                 else:
                     text += event.unicode
-        if done == True:
-            answr = False
+        if done:
             if text == answer:
-                answr = True
-                progress += 1
                 get_new_question = True
                 for i in range(20):
                     user.x += 10.25
