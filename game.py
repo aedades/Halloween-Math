@@ -3,7 +3,7 @@ import operator
 import pygame
 
 
-def randomCalc(difficulty):
+def generate_nums(difficulty):
     ops = {'+': operator.add,
            '-': operator.sub,
            '*': operator.mul, }
@@ -14,11 +14,11 @@ def randomCalc(difficulty):
     return nums
 
 
-def questionText(nums):
+def get_question_text(nums):
     return f"{nums[0]} {nums[1]} {nums[2]}"
 
 
-def getAnswer(nums):
+def get_answer(nums):
     if nums[1] == '+':
         answer = nums[0] + nums[2]
     if nums[1] == '-':
@@ -28,7 +28,7 @@ def getAnswer(nums):
     return answer
 
 
-class button():
+class Button():
     def __init__(self, color, x, y, width, height, text=''):
         self.color = color
         self.x = x
@@ -36,7 +36,7 @@ class button():
         self.width = width
         self.height = height
         self.text = text
-        self.isclicked = False
+        self.is_clicked = False
 
     def draw(self, win, outline=None):
         # Call this method to draw the button on the screen
@@ -51,11 +51,11 @@ class button():
             win.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
-    def isOver(self, pos):
+    def is_over(self, pos):
         # Pos is the mouse position or a tuple of (x,y) coordinates
         if pos[0] > self.x and pos[0] < self.x + self.width:
             if pos[1] > self.y and pos[1] < self.y + self.height:
-                self.isclicked = True
+                self.is_clicked = True
                 return True
 
             return False
@@ -69,6 +69,7 @@ class User:
         self.height = height
         self.image = pygame.image.load(image_path)
 
+
 def get_click(button):
     for event in pygame.event.get():
         pos = pygame.mouse.get_pos()
@@ -77,6 +78,6 @@ def get_click(button):
             pygame.quit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if button.isOver(pos):
+            if button.is_over(pos):
                 lives = 3
                 dead = False
