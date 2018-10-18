@@ -50,6 +50,9 @@ font = pygame.font.SysFont('comicsans', 30, True)
 
 user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
 
+difficulty = 10
+level = 1
+
 
 def redraw_game_window():
     draw_background()
@@ -110,11 +113,29 @@ def get_question():
     return question, answer
 
 
-difficulty = 10
-level = 1
+def handle_keydown_event(event, text, progress, done):
+    if event.type == pygame.QUIT:
+        pygame.quit()
+
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_RETURN:
+            print(f'your answer: {text}')
+            print(f'correct answer: {answer}')
+            if text == answer:
+                progress += 1
+            print(f'you are at {progress}/5')
+            done = True
+        elif event.key == pygame.K_BACKSPACE:
+            text = text[:-1]
+        else:
+            text += event.unicode
+
+    return text, progress, done
+
 
 question, answer = get_question()
 get_new_question = False
+
 
 while 1:
     is_dead = True if lives <= 0 else False
@@ -129,21 +150,8 @@ while 1:
         done = False
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
+            text, progress, done = handle_keydown_event(event, text, progress, done)
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    print(f'your answer: {text}')
-                    print(f'correct answer: {answer}')
-                    if text == answer:
-                        progress += 1
-                    print(f'you are at {progress}/5')
-                    done = True
-                elif event.key == pygame.K_BACKSPACE:
-                    text = text[:-1]
-                else:
-                    text += event.unicode
         if done:
             if text == answer:
                 get_new_question = True
@@ -169,6 +177,7 @@ while 1:
                                 difficulty += 2
                                 level += 1
                                 lives += 1
+
             else:
                 lives -= 1
                 if lives == 0:
