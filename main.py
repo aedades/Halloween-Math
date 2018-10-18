@@ -7,7 +7,6 @@ window_len = 1280
 window_width = 720
 win = pygame.display.set_mode((window_len, window_width))
 pygame.display.set_caption("Halloween Math")
-char = pygame.image.load('res/ghost-trick-or-treating-hi.png')
 u_dead = pygame.image.load('res/youdied.png')
 pygame.mixer.music.load('res/electro_zombies.mp3')
 pygame.mixer.music.set_volume(0.2)
@@ -51,10 +50,7 @@ font = pygame.font.SysFont('comicsans', 30, True)
 
 # TODO
 # create class for user
-x = 83
-y = 560
-char_width = 10
-char_height = 10
+user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
 
 
 def redrawGameWindow():
@@ -72,7 +68,7 @@ def redrawGameWindow():
     pygame.draw.rect(win, (160, 160, 160), (547, 190, 186, 41))
     win.blit(question_text, (557, 200))  # 166, 21
     # draw sprite
-    win.blit(char, (x, y, char_width, char_height))
+    win.blit(user.image, (user.x, user.y, user.width, user.height))
     # update
     answer_txt = font.render(text, True, (255, 255, 255))
     width = max(200, answer_txt.get_width() + 10)
@@ -141,7 +137,7 @@ while 1:
                 progress += 1
                 getnewquestion = True
                 for i in range(20):
-                    x += 10.25
+                    user.x += 10.25
                     redrawGameWindow()
                 while progress >= 5:
                     # make screen freeze so you cant input more
@@ -153,7 +149,7 @@ while 1:
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             if newgame.isOver(pos):
                                 progress = 0
-                                x = 83
+                                user.x = 83
                                 done = False
                                 difficulty += 2
                                 level += 1
@@ -175,7 +171,7 @@ while 1:
                 if retry.isOver(pos):
                     lives = 3
                     dead = False
-                    x = 83
+                    user.x = 83
                     level = 1
                     difficulty = 10
 

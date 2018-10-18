@@ -61,6 +61,14 @@ class button():
             return False
 
 
+class User:
+    def __init__(self, x, y, width, height, image_path):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.image = pygame.image.load(image_path)
+
 def get_click(button):
     for event in pygame.event.get():
         pos = pygame.mouse.get_pos()
