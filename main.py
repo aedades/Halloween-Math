@@ -113,7 +113,9 @@ def get_question():
     return question, answer
 
 
-def handle_keydown_event(event, text, progress, done):
+def handle_keydown_event(event, text, done):
+    global progress
+
     if event.type == pygame.QUIT:
         pygame.quit()
 
@@ -130,7 +132,29 @@ def handle_keydown_event(event, text, progress, done):
         else:
             text += event.unicode
 
-    return text, progress, done
+    return text, done
+
+
+## Game states ##
+
+def level_up():
+    global progress, lives, user, difficulty, level
+
+    progress = 0
+    user.x = 83
+    difficulty += 2
+    level += 1
+    lives += 1
+
+
+def died():
+    global lives, is_dead, user, difficulty, level
+
+    lives = 3
+    is_dead = False
+    user.x = 83
+    difficulty = 10
+    level = 1
 
 
 question, answer = get_question()
@@ -150,7 +174,7 @@ while 1:
         done = False
 
         for event in pygame.event.get():
-            text, progress, done = handle_keydown_event(event, text, progress, done)
+            text, done = handle_keydown_event(event, text, done)
 
         if done:
             if text == answer:
@@ -171,12 +195,8 @@ while 1:
 
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             if new_game_button.is_over(pos):
-                                progress = 0
-                                user.x = 83
                                 done = False
-                                difficulty += 2
-                                level += 1
-                                lives += 1
+                                level_up()
 
             else:
                 lives -= 1
@@ -195,10 +215,6 @@ while 1:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if retry_button.is_over(pos):
-                    lives = 3
-                    is_dead = False
-                    user.x = 83
-                    level = 1
-                    difficulty = 10
+                    died()
 
     redraw_game_window()
