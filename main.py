@@ -48,18 +48,15 @@ user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
 # game state
 # TODO
 # add 5 more headstones to work as progress markers
-progress = 0
+
 # TODO
 # 5 for now
 # if progress = 10 make it so game is over and halloween candy flies around or somthing
-lives = 3
 
 # TODO
 # create graphics for lives
 # can use for i in lives draw(life.png) x + 50
 
-difficulty = 10
-level = 1
 correct_to_win = 5
 
 ## Drawers ##
@@ -182,32 +179,35 @@ def handle_mousebuttondown_event(event, check_state, done):
                 level_up()
             elif check_state is 'died':
                 done = True
-                died()
+                set_start()
 
     return done
 
 
 ## Game states ##
 
+def set_start():
+    global progress, lives, is_dead, user, difficulty, level
+
+    progress = 0
+    lives = 3
+    user.x = 83
+    difficulty = 10
+    level = 1
+    is_dead = False
+
+
 def level_up():
     global progress, lives, user, difficulty, level
 
     progress = 0
+    lives += 1
     user.x = 83
     difficulty += 2
     level += 1
-    lives += 1
 
 
-def died():
-    global lives, is_dead, user, difficulty, level
-
-    lives = 3
-    is_dead = False
-    user.x = 83
-    difficulty = 10
-    level = 1
-
+set_start()
 
 question, answer = get_question()
 get_new_question = False
