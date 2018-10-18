@@ -140,6 +140,13 @@ def get_question():
     return question, answer
 
 
+def advance_user():
+    global user
+
+    for i in range(20):
+        user.x += 10.25
+        redraw_game_window()
+
 ## Event handlers ##
 
 def handle_keydown_event(event, text, done):
@@ -230,9 +237,7 @@ while 1:
         if done:
             if text == answer:
                 get_new_question = True
-                for i in range(20):
-                    user.x += 10.25
-                    redraw_game_window()
+                advance_user()
 
                 while progress >= correct_to_win:
                     # make screen freeze so you cant input more
