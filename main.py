@@ -41,7 +41,7 @@ progress = 0
 # 5 for now
 # if progress = 10 make it so game is over and halloween candy flies around or somthing
 lives = 3
-is_dead = False
+
 # TODO
 # create graphics for lives
 # can use for i in lives draw(life.png) x + 50
@@ -84,28 +84,29 @@ def redraw_game_window():
     pygame.display.update()
 
 
+def get_question():
+    nums = generate_nums(difficulty)
+    question = get_question_text(nums)
+    answer = str(get_answer(nums))
+    return question, answer
+
 # main loop
 run = True
-get_new_question = False
 
 difficulty = 10
 level = 1
 
-nums = generate_nums(difficulty)
-question = get_question_text(nums)
-answer = str(get_answer(nums))
-get_new_question = False
+question, answer = get_question()
+get_new_question = True
+
 while 1:
+    is_dead = True if lives <= 0 else False
     redraw_game_window()
     pygame.time.delay(100)
 
-    is_dead = True if lives <= 0 else False
-
     while not is_dead:
         if get_new_question:
-            nums = generate_nums(difficulty)
-            question = get_question_text(nums)
-            answer = str(get_answer(nums))
+            question, answer = get_question()
             get_new_question = False
             text = ''
         done = False
