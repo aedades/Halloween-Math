@@ -3,19 +3,23 @@ from game import *
 
 pygame.init()
 
+# window
 window_len = 1280
 window_width = 720
 win = pygame.display.set_mode((window_len, window_width))
 pygame.display.set_caption("Halloween Math")
-u_dead = pygame.image.load('res/youdied.png')
+
+# images
+bg = pygame.image.load('res/graveyard(1280x720).png')
+you_died_image = pygame.image.load('res/youdied.png')
+
+# music
 pygame.mixer.music.load('res/electro_zombies.mp3')
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)
 
-
-#Welcome statement
+# welcome statement
 print('My name is Greggroll and this is my first pygame.')
-
 
 # TODO
 # crop out whitespace on undertale
@@ -24,16 +28,24 @@ print('My name is Greggroll and this is my first pygame.')
 # input box rect
 input_box = pygame.Rect(540, 250, 100, 32)
 text = ''
+'''
 active = False
 color_inactive = pygame.Color('lightskyblue3')
 color_active = pygame.Color('dodgerblue2')
 color = color_inactive
+'''
 
-# creates retry button using class from game
+# buttons
 retry_button = Button((255, 255, 255), 540, 500, 200, 75, 'Retry?')
 new_game_button = Button((255, 255, 255), 540, 500, 200, 75, 'Next level?')
 
-bg = pygame.image.load('res/graveyard(1280x720).png')
+# font
+font = pygame.font.SysFont('comicsans', 30, True)
+
+# user
+user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
+
+# game state
 # TODO
 # add 5 more headstones to work as progress markers
 progress = 0
@@ -46,15 +58,15 @@ lives = 3
 # create graphics for lives
 # can use for i in lives draw(life.png) x + 50
 
-font = pygame.font.SysFont('comicsans', 30, True)
-
-user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
-
 difficulty = 10
 level = 1
 
 
+## Drawers ##
+
 def redraw_game_window():
+    global new_game_button
+
     draw_background()
     draw_current_level()
     draw_health()
@@ -63,8 +75,7 @@ def redraw_game_window():
     update_input_box()
 
     if is_dead:
-        win.blit(u_dead, (0, 0, 1280, 720))
-        retry_button.draw(win)
+        draw_you_died()
     if progress == 5:
         # TODO
         # make screen or animation for winning
@@ -74,31 +85,50 @@ def redraw_game_window():
 
 
 def draw_background():
+    global win
+
     win.blit(bg, (0, 0))
 
 
 def draw_current_level():
+    global win, font
+
     level_text = (font.render(f'level: {level}', 1, (0, 0, 0)))
     win.blit(level_text, (1150, 10))
 
 
 def draw_health():
+    global win, font
+
     health = font.render(f'lives: {lives} ', 1, (255, 255, 255))  # 81x21
     pygame.draw.rect(win, (160, 160, 160), (589.5, 90, 105, 41))
     win.blit(health, (599.5, 100))
 
 
 def draw_question():
+    global win, font
+
     question_text = font.render(question, 1, (255, 255, 255))
     pygame.draw.rect(win, (160, 160, 160), (547, 190, 186, 41))
     win.blit(question_text, (557, 200))  # 166, 21
 
 
 def draw_sprite():
+    global win
+
     win.blit(user.image, (user.x, user.y, user.width, user.height))
 
 
+def draw_you_died():
+    global win, you_died_image, retry_button
+
+    win.blit(you_died_image, (0, 0, 1280, 720))
+    retry_button.draw(win)
+
+
 def update_input_box():
+    global win, font
+
     answer_text = font.render(text, True, (255, 255, 255))
     answer_width = max(200, answer_text.get_width() + 10)
     input_box.w = answer_width
@@ -112,6 +142,8 @@ def get_question():
     answer = str(get_answer(nums))
     return question, answer
 
+
+## Event handlers ##
 
 def handle_keydown_event(event, text, done):
     global progress
@@ -153,6 +185,7 @@ def handle_mousebuttondown_event(event, done):
             died()
 
     return done
+
 
 ## Game states ##
 
