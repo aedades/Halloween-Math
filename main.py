@@ -135,6 +135,25 @@ def handle_keydown_event(event, text, done):
     return text, done
 
 
+def handle_mousebuttondown_event(event, done):
+    global new_game_button, retry_button
+
+    pos = pygame.mouse.get_pos()
+
+    if event.type == pygame.QUIT:
+        pygame.quit()
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if new_game_button.is_over(pos):
+            done = False
+            level_up()
+
+        if retry_button.is_over(pos):
+            done = True
+            died()
+
+    return done
+
 ## Game states ##
 
 def level_up():
@@ -188,15 +207,7 @@ while 1:
                     redraw_game_window()
 
                     for event in pygame.event.get():
-                        pos = pygame.mouse.get_pos()
-
-                        if event.type == pygame.QUIT:
-                            pygame.quit()
-
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if new_game_button.is_over(pos):
-                                done = False
-                                level_up()
+                        done = handle_mousebuttondown_event(event, done)
 
             else:
                 lives -= 1
@@ -208,13 +219,6 @@ while 1:
 
     while is_dead:
         for event in pygame.event.get():
-            pos = pygame.mouse.get_pos()
-
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if retry_button.is_over(pos):
-                    died()
+            done = handle_mousebuttondown_event(event, done)
 
     redraw_game_window()
