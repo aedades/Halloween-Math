@@ -60,7 +60,7 @@ lives = 3
 
 difficulty = 10
 level = 1
-
+correct_to_win = 5
 
 ## Drawers ##
 
@@ -91,14 +91,14 @@ def draw_background():
 
 
 def draw_current_level():
-    global win, font
+    global win, font, level
 
     level_text = (font.render(f'level: {level}', 1, (0, 0, 0)))
     win.blit(level_text, (1150, 10))
 
 
 def draw_health():
-    global win, font
+    global win, font, lives
 
     health = font.render(f'lives: {lives} ', 1, (255, 255, 255))  # 81x21
     pygame.draw.rect(win, (160, 160, 160), (589.5, 90, 105, 41))
@@ -146,7 +146,7 @@ def get_question():
 ## Event handlers ##
 
 def handle_keydown_event(event, text, done):
-    global progress
+    global progress, correct_to_win
 
     if event.type == pygame.QUIT:
         pygame.quit()
@@ -157,7 +157,7 @@ def handle_keydown_event(event, text, done):
             print(f'correct answer: {answer}')
             if text == answer:
                 progress += 1
-            print(f'you are at {progress}/5')
+            print(f'you are at {progress}/{correct_to_win}')
             done = True
         elif event.key == pygame.K_BACKSPACE:
             text = text[:-1]
@@ -212,7 +212,6 @@ def died():
 question, answer = get_question()
 get_new_question = False
 
-
 while 1:
     is_dead = True if lives <= 0 else False
     redraw_game_window()
@@ -235,7 +234,7 @@ while 1:
                     user.x += 10.25
                     redraw_game_window()
 
-                while progress >= 5:
+                while progress >= correct_to_win:
                     # make screen freeze so you cant input more
                     redraw_game_window()
 
