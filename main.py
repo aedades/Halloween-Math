@@ -3,20 +3,23 @@ from game import *
 
 pygame.init()
 
+# window
 window_len = 1280
 window_width = 720
 win = pygame.display.set_mode((window_len, window_width))
 pygame.display.set_caption("Halloween Math")
-char = pygame.image.load('res/ghost-trick-or-treating-hi.png')
-u_dead = pygame.image.load('res/youdied.png')
+
+# images
+bg = pygame.image.load('res/graveyard(1280x720).png')
+you_died_image = pygame.image.load('res/youdied.png')
+
+# music
 pygame.mixer.music.load('res/electro_zombies.mp3')
 pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1)
 
-
-#Welcome statement
+# welcome statement
 print('My name is Greggroll and this is my first pygame.')
-
 
 # TODO
 # crop out whitespace on undertale
@@ -25,158 +28,234 @@ print('My name is Greggroll and this is my first pygame.')
 # input box rect
 input_box = pygame.Rect(540, 250, 100, 32)
 text = ''
+'''
 active = False
 color_inactive = pygame.Color('lightskyblue3')
 color_active = pygame.Color('dodgerblue2')
 color = color_inactive
+'''
 
-# creates retry button using class from game
-retry = button((255, 255, 255), 540, 500, 200, 75, 'Retry?')
-newgame = button((255, 255, 255), 540, 500, 200, 75, 'Next level?')
+# buttons
+retry_button = Button((255, 255, 255), 540, 500, 200, 75, 'Retry?')
+new_game_button = Button((255, 255, 255), 540, 500, 200, 75, 'Next level?')
 
-bg = pygame.image.load('res/graveyard(1280x720).png')
+# font
+font = pygame.font.SysFont('comicsans', 30, True)
+
+# user
+user = User(83, 560, 10, 10, 'res/ghost-trick-or-treating-hi.png')
+
+# game state
 # TODO
 # add 5 more headstones to work as progress markers
-progress = 0
+
 # TODO
 # 5 for now
 # if progress = 10 make it so game is over and halloween candy flies around or somthing
-lives = 3
-dead = False
+
 # TODO
 # create graphics for lives
 # can use for i in lives draw(life.png) x + 50
 
-font = pygame.font.SysFont('comicsans', 30, True)
+correct_to_win = 5
 
-# TODO
-# create class for user
-x = 83
-y = 560
-char_width = 10
-char_height = 10
+## Drawers ##
 
+def redraw_game_window():
+    global new_game_button
 
-def redrawGameWindow():
-    # draw background
-    win.blit(bg, (0, 0))
-    # draw current level
-    level_text = (font.render(f'level: {level}', 1, (0, 0, 0)))
-    win.blit(level_text, (1150, 10))
-    # draw health with background
-    health = font.render(f'lives: {lives} ', 1, (255, 255, 255))  # 81x21
-    pygame.draw.rect(win, (160, 160, 160), (589.5, 90, 105, 41))
-    win.blit(health, (599.5, 100))
-    # draw question
-    question_text = font.render(question, 1, (255, 255, 255))
-    pygame.draw.rect(win, (160, 160, 160), (547, 190, 186, 41))
-    win.blit(question_text, (557, 200))  # 166, 21
-    # draw sprite
-    win.blit(char, (x, y, char_width, char_height))
-    # update
-    answer_txt = font.render(text, True, (255, 255, 255))
-    width = max(200, answer_txt.get_width() + 10)
-    input_box.w = width
-    win.blit(answer_txt, (input_box.x + 5, input_box.y + 5))
-    pygame.draw.rect(win, (255, 100, 0), input_box, 2)
+    draw_background()
+    draw_current_level()
+    draw_health()
+    draw_question()
+    draw_sprite()
+    update_input_box()
 
-    if dead == True:
-        win.blit(u_dead, (0, 0, 1280, 720))
-        retry.draw(win)
+    if is_dead:
+        draw_you_died()
     if progress == 5:
         # TODO
         # make screen or animation for winning
-        newgame.draw(win)
+        new_game_button.draw(win)
+
     pygame.display.update()
 
 
-# main loop
-run = True
-getnewquestion = False
+def draw_background():
+    global win
 
-difficulty = 10
-level = 1
+    win.blit(bg, (0, 0))
 
-nums = randomCalc(difficulty)
-question = questionText(nums)
-answer = str(getAnswer(nums))
-getnewquestion = False
+
+def draw_current_level():
+    global win, font, level
+
+    level_text = (font.render(f'level: {level}', 1, (0, 0, 0)))
+    win.blit(level_text, (1150, 10))
+
+
+def draw_health():
+    global win, font, lives
+
+    health = font.render(f'lives: {lives} ', 1, (255, 255, 255))  # 81x21
+    pygame.draw.rect(win, (160, 160, 160), (589.5, 90, 105, 41))
+    win.blit(health, (599.5, 100))
+
+
+def draw_question():
+    global win, font
+
+    question_text = font.render(question, 1, (255, 255, 255))
+    pygame.draw.rect(win, (160, 160, 160), (547, 190, 186, 41))
+    win.blit(question_text, (557, 200))  # 166, 21
+
+
+def draw_sprite():
+    global win
+
+    win.blit(user.image, (user.x, user.y, user.width, user.height))
+
+
+def draw_you_died():
+    global win, you_died_image, retry_button
+
+    win.blit(you_died_image, (0, 0, 1280, 720))
+    retry_button.draw(win)
+
+
+def update_input_box():
+    global win, font
+
+    answer_text = font.render(text, True, (255, 255, 255))
+    answer_width = max(200, answer_text.get_width() + 10)
+    input_box.w = answer_width
+    win.blit(answer_text, (input_box.x + 5, input_box.y + 5))
+    pygame.draw.rect(win, (255, 100, 0), input_box, 2)
+
+
+def get_question():
+    nums = generate_nums(difficulty)
+    question = get_question_text(nums)
+    answer = str(get_answer(nums))
+    return question, answer
+
+
+def advance_user():
+    global user
+
+    for i in range(20):
+        user.x += 10.25
+        redraw_game_window()
+
+## Event handlers ##
+
+def handle_keydown_event(event, text, done):
+    global progress, correct_to_win
+
+    if event.type == pygame.QUIT:
+        pygame.quit()
+
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_RETURN:
+            print(f'your answer: {text}')
+            print(f'correct answer: {answer}')
+            if text == answer:
+                progress += 1
+            print(f'you are at {progress}/{correct_to_win}')
+            done = True
+        elif event.key == pygame.K_BACKSPACE:
+            text = text[:-1]
+        else:
+            text += event.unicode
+
+    return text, done
+
+
+def handle_mousebuttondown_event(event, check_state, done):
+    button = Button((255, 255, 255), 540, 500, 200, 75, None)
+
+    pos = pygame.mouse.get_pos()
+
+    if event.type == pygame.QUIT:
+        pygame.quit()
+
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if button.is_over(pos):
+            if check_state is 'level_up':
+                done = False
+                level_up()
+            elif check_state is 'died':
+                done = True
+                set_start()
+
+    return done
+
+
+## Game states ##
+
+def set_start():
+    global progress, lives, is_dead, user, difficulty, level
+
+    progress = 0
+    lives = 3
+    user.x = 83
+    difficulty = 10
+    level = 1
+    is_dead = False
+
+
+def level_up():
+    global progress, lives, user, difficulty, level
+
+    progress = 0
+    lives += 1
+    user.x = 83
+    difficulty += 2
+    level += 1
+
+
+set_start()
+
+question, answer = get_question()
+get_new_question = False
+
 while 1:
-    redrawGameWindow()
+    is_dead = True if lives <= 0 else False
+    redraw_game_window()
     pygame.time.delay(100)
 
-    if lives <= 0:
-        dead = True
-    else:
-        dead = False
-    while dead == False:
-        if getnewquestion == True:
-            nums = randomCalc(difficulty)
-            question = questionText(nums)
-            answer = str(getAnswer(nums))
-            getnewquestion = False
+    while not is_dead:
+        if get_new_question:
+            question, answer = get_question()
+            get_new_question = False
             text = ''
         done = False
+
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    print(f'your answer: {text}')
-                    print(f'correct answer: {answer}')
-                    if text == answer:
-                        np = progress + 1
-                    else:
-                        np = progress
-                    print(f'you are at {np}/5')
-                    done = True
-                elif event.key == pygame.K_BACKSPACE:
-                    text = text[:-1]
-                else:
-                    text += event.unicode
-        if done == True:
-            answr = False
+            text, done = handle_keydown_event(event, text, done)
+
+        if done:
             if text == answer:
-                answr = True
-                progress += 1
-                getnewquestion = True
-                for i in range(20):
-                    x += 10.25
-                    redrawGameWindow()
-                while progress >= 5:
+                get_new_question = True
+                advance_user()
+
+                while progress >= correct_to_win:
                     # make screen freeze so you cant input more
-                    redrawGameWindow()
+                    redraw_game_window()
+
                     for event in pygame.event.get():
-                        pos = pygame.mouse.get_pos()
-                        if event.type == pygame.QUIT:
-                            pygame.quit()
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            if newgame.isOver(pos):
-                                progress = 0
-                                x = 83
-                                done = False
-                                difficulty += 2
-                                level += 1
-                                lives += 1
+                        done = handle_mousebuttondown_event(event, 'level_up', done)
+
             else:
                 lives -= 1
                 if lives == 0:
-                    dead = True
-                getnewquestion = True
-        redrawGameWindow()
-    while dead == True:
+                    is_dead = True
+                    get_new_question = True
+
+        redraw_game_window()
+
+    while is_dead:
         for event in pygame.event.get():
-            pos = pygame.mouse.get_pos()
+            done = handle_mousebuttondown_event(event, 'died', done)
 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if retry.isOver(pos):
-                    lives = 3
-                    dead = False
-                    x = 83
-                    level = 1
-                    difficulty = 10
-
-    redrawGameWindow()
+    redraw_game_window()
